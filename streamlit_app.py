@@ -26,5 +26,10 @@ if uploaded_image is not None:
     st.image(image, caption='Uploaded Image', use_column_width=True)
 
     if st.button('Predict'):
-        prediction = predict_image(image)
-        st.write('Prediction:', prediction)
+        predicted_label, prediction_probabilities = predict_image(image)
+        st.write(f'Prediction: {predicted_label}')
+        
+        # Display probabilities for each class
+        st.write('Probabilities:')
+        for i, class_name in enumerate(class_names):
+            st.write(f'{class_name}: {prediction_probabilities[i]:.4f}')
