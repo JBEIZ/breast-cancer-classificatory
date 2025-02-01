@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 
 # Load the trained model
-model = load_model('breast_cancer_classifier_model.keras')
+model = tf.keras.models.load_model('breast_cancer_classifier_model.keras')
 
 # Class names mapping
 class_names = ['normal', 'benign', 'malignant']
