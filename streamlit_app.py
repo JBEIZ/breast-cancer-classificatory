@@ -1,19 +1,29 @@
 import streamlit as st
-import tensorflow as tf
-from tensorflow.keras.models import load_model
 from PIL import Image
 import numpy as np
+import tensorflow as tf
 
-# Load your saved model
-model = load_model('breast_cancer_classifier_model.keras')  # or model_name.h5 if you saved in HDF5 format
+# Load the trained model
+model = load_model('breast_cancer_classifier_model.keras')
+
+# Class names mapping
+class_names = ['normal', 'benign', 'malignant']
 
 # Function to process the image and make predictions
 def predict_image(image):
-    image = image.resize((224, 224))  # Resize to the input shape of the model
+    # Resize and normalize the image
+    image = image.resize((224, 224))  # Resize to model input size
     image = np.array(image) / 255.0   # Normalize the image
     image = np.expand_dims(image, axis=0)  # Add batch dimension
+    
+    # Make prediction
     prediction = model.predict(image)
-    return prediction
+
+    # Get the class with the highest probability
+    predicted_class = np.argmax(prediction, axis=-1)  # Get class index with max probability
+    predicted_label = class_names[predicted_class[0]]  # Get label for predicted class
+    
+    return predicted_label, prediction[0]  # Return label and class probabilities
 
 # Streamlit interface
 st.title('Breast Cancer Classification')
@@ -33,3 +43,4 @@ if uploaded_image is not None:
         st.write('Probabilities:')
         for i, class_name in enumerate(class_names):
             st.write(f'{class_name}: {prediction_probabilities[i]:.4f}')
+
