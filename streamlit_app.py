@@ -5,7 +5,7 @@ from PIL import Image
 import numpy as np
 
 # Load your saved model
-model = load_model('C:\Users\Joshua\Downloads\breast_cancer_classifier_model.keras')  # or model_name.h5 if you saved in HDF5 format
+model = load_model('breast_cancer_classifier_model.keras')  # or model_name.h5 if you saved in HDF5 format
 
 # Function to process the image and make predictions
 def predict_image(image):
