@@ -29,7 +29,7 @@ def predict_image(image):
 def add_bg_from_local(image_file):
     with open(image_file, "rb") as file:
         encoded = file.read()
-    b64_encoded = f"data:image/png;base64,{encoded.hex()}"
+    b64_encoded = f"data:image/jpg;base64,{encoded.hex()}"
     
     st.markdown(
         f"""
@@ -45,7 +45,7 @@ def add_bg_from_local(image_file):
     )
 
 # Call function to add background
-add_bg_from_local("background.png")  # Ensure the image file is in the working directory
+add_bg_from_local("background.jpg")  # Ensure the image file is in the working directory
 
 # Streamlit interface
 st.title('Breast Cancer Classification')
