@@ -25,28 +25,6 @@ def predict_image(image):
     
     return predicted_label, prediction[0]  # Return label and class probabilities
 
-# Apply custom CSS for background image
-def add_bg_from_local(image_file):
-    with open(image_file, "rb") as file:
-        encoded = file.read()
-    b64_encoded = f"data:image/jpg;base64,{encoded.hex()}"
-    
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background-image: url("{b64_encoded}");
-            background-size: cover;
-            background-position: center;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-# Call function to add background
-add_bg_from_local("background.jpg")  # Ensure the image file is in the working directory
-
 # Streamlit interface
 st.title('Breast Cancer Classification')
 st.write('Upload an ultrasound image to classify it as normal, benign, or malignant.')
@@ -65,5 +43,3 @@ if uploaded_image is not None:
         st.write('Probabilities:')
         for i, class_name in enumerate(class_names):
             st.write(f'{class_name}: {prediction_probabilities[i]:.4f}')
-
-
