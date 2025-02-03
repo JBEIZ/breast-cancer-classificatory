@@ -2,7 +2,6 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
-from google.colab import drive
 import requests
 
 model_url = "https://drive.google.com/file/d/1gnQf61mbXKdVrjIKETbbE7tcUUbn8S-O/view?usp=sharing"
