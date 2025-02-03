@@ -3,14 +3,15 @@ from PIL import Image
 import numpy as np
 import tensorflow as tf
 from google.colab import drive
+import requests
 
-# Mount Google Drive
-drive.mount('/content/drive')
+model_url = "https://drive.google.com/file/d/1gnQf61mbXKdVrjIKETbbE7tcUUbn8S-O/view?usp=sharing"
+model_path = "breast_cancer_classifier_model.keras"
 
-# Define the path to your model in Google Drive
-model_path = "/content/drive/MyDrive/path_to_your_model/breast_cancer_classifier_model.keras"
+response = requests.get(model_url)
+with open(model_path, "wb") as file:
+    file.write(response.content)
 
-# Load the trained model from Google Drive
 model = tf.keras.models.load_model(model_path)
 
 # Class names mapping
