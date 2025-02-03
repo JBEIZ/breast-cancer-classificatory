@@ -2,9 +2,16 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
+from google.colab import drive
 
-# Load the trained model
-model = tf.keras.models.load_model('breast_cancer_classifier_model.keras')
+# Mount Google Drive
+drive.mount('/content/drive')
+
+# Define the path to your model in Google Drive
+model_path = "/content/drive/MyDrive/path_to_your_model/breast_cancer_classifier_model.keras"
+
+# Load the trained model from Google Drive
+model = tf.keras.models.load_model(model_path)
 
 # Class names mapping
 class_names = ['normal', 'benign', 'malignant']
