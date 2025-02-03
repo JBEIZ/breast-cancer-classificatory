@@ -3,6 +3,29 @@ from PIL import Image
 import numpy as np
 import tensorflow as tf
 
+import base64
+
+def get_base64(file):
+    with open(file, "rb") as f:
+        return base64.b64encode(f.read()).decode()
+
+def set_background(image_file):
+    bin_str = get_base64(image_file)
+    bg_img = f"""
+    <style>
+    [data-testid="stAppViewContainer"] {{
+        background-image: url("data:image/png;base64,{bin_str}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }}
+    </style>
+    """
+    st.markdown(bg_img, unsafe_allow_html=True)
+
+# Apply local background image
+set_background("background.jpg")
+
 # Load the trained model
 model = tf.keras.models.load_model('breast_cancer_classifier_model.keras')
 
