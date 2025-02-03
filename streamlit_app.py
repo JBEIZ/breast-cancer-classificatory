@@ -3,34 +3,34 @@ from PIL import Image
 import numpy as np
 import tensorflow as tf
 import requests
+import os
 
-model_url = "https://drive.google.com/file/d/1gnQf61mbXKdVrjIKETbbE7tcUUbn8S-O/view?usp=sharing"
+# Define model path
 model_path = "breast_cancer_classifier_model.keras"
 
+model_url = "https://drive.google.com/file/d/1gnQf61mbXKdVrjIKETbbE7tcUUbn8S-O/view?usp=drive_link"
 response = requests.get(model_url)
 with open(model_path, "wb") as file:
-    file.write(response.content)
+     file.write(response.content)
 
-model = tf.keras.models.load_model(model_path)
+# Load the trained model
+if os.path.exists(model_path):
+    model = tf.keras.models.load_model(model_path)
+else:
+    st.error("Model file not found. Please upload it to the same directory.")
 
 # Class names mapping
 class_names = ['normal', 'benign', 'malignant']
 
 # Function to process the image and make predictions
 def predict_image(image):
-    # Resize and normalize the image
     image = image.resize((224, 224))  # Resize to model input size
-    image = np.array(image) / 255.0   # Normalize the image
+    image = np.array(image) / 255.0   # Normalize
     image = np.expand_dims(image, axis=0)  # Add batch dimension
-    
-    # Make prediction
     prediction = model.predict(image)
-
-    # Get the class with the highest probability
-    predicted_class = np.argmax(prediction, axis=-1)  # Get class index with max probability
-    predicted_label = class_names[predicted_class[0]]  # Get label for predicted class
-    
-    return predicted_label, prediction[0]  # Return label and class probabilities
+    predicted_class = np.argmax(prediction, axis=-1)[0]
+    predicted_label = class_names[predicted_class]
+    return predicted_label, prediction[0]
 
 # Streamlit interface
 st.title('Breast Cancer Classification')
