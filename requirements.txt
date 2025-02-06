@@ -1,7 +1,7 @@
 streamlit
 openai
 tensorflow
-streamlit
 numpy
 matplotlib
-pip install tensorflow gdown Pillow streamlit
+gdown
+Pillow
