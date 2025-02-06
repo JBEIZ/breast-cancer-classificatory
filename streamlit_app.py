@@ -2,9 +2,22 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
+import gdown
+import os
+
+# Google Drive file ID (replace with your actual file ID)
+file_id = '1DV8LS_uSzQ_3hRrcTEmu7FnXkaMSzfOg'  # Your Google Drive file ID
+
+# Path to save the model
+model_path = 'breast_cancer_classifier_model.keras'
+
+# Check if model is already downloaded, if not, download it
+if not os.path.exists(model_path):
+    st.write("Downloading the model from Google Drive...")
+    gdown.download(f'https://drive.google.com/uc?id={file_id}', model_path, quiet=False)
 
 # Load the trained model
-model = tf.keras.models.load_model('breast_cancer_classifier_model.keras')
+model = tf.keras.models.load_model(model_path)
 
 # Class names mapping
 class_names = ['normal', 'benign', 'malignant']
@@ -43,3 +56,4 @@ if uploaded_image is not None:
         st.write('Probabilities:')
         for i, class_name in enumerate(class_names):
             st.write(f'{class_name}: {prediction_probabilities[i]:.4f}')
+
