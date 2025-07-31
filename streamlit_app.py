@@ -5,8 +5,6 @@ import tensorflow as tf
 import gdown
 import os
 
-# Google Drive file ID (replace with your actual file ID)
-file_id = '1DV8LS_uSzQ_3hRrcTEmu7FnXkaMSzfOg'
 model_path = 'breast_cancer_classifier_model.keras'
 
 # Check if the model is already downloaded
