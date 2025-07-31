@@ -1,61 +1,49 @@
 import streamlit as st
-from PIL import Image
 import numpy as np
 import tensorflow as tf
-import gdown
-import os
-
-model_path = 'breast_cancer_classifier_model.keras'
-
-# Check if the model is already downloaded
-if not os.path.exists(model_path):
-    with st.spinner("Downloading the model from Google Drive..."):
-        gdown.download(f'https://drive.google.com/uc?id={file_id}', model_path, quiet=False)
+from PIL import Image
 
 # Load the model
-try:
-    model = tf.keras.models.load_model(model_path)
-except Exception as e:
-    st.error(f"Failed to load model: {e}")
-    st.stop()
+@st.cache_resource
+def load_model():
+    model = tf.keras.models.load_model("breast_cancer_classifier_model.keras")
+    return model
 
-# Class names
-class_names = ['normal', 'benign', 'malignant']
+model = load_model()
 
-# Prediction function
-def predict_image(image):
-    try:
-        image = image.resize((224, 224))
-        image = np.array(image) / 255.0
-        if image.shape[-1] == 4:  # Handle images with alpha channel
-            image = image[..., :3]
-        image = np.expand_dims(image, axis=0)
-        prediction = model.predict(image)
-        predicted_class = np.argmax(prediction, axis=-1)
-        predicted_label = class_names[predicted_class[0]]
-        return predicted_label, prediction[0]
-    except Exception as e:
-        st.error(f"Error during prediction: {e}")
-        return None, None
+# Define class names (update if needed)
+CLASS_NAMES = ['Benign', 'Malignant', 'Normal']
 
-# Streamlit interface
-st.title('🧠 Breast Cancer Classification (Ultrasound Image)')
-st.write('Upload an ultrasound image to classify it as **normal**, **benign**, or **malignant**.')
+# Preprocess image
+def preprocess_image(img):
+    img = img.convert('RGB')
+    img = img.resize((224, 224))
+    img_array = np.array(img) / 255.0
+    img_array = np.expand_dims(img_array, axis=0)
+    return img_array
 
-uploaded_image = st.file_uploader("📤 Upload an image", type=["jpg", "jpeg", "png"])
+# Predict function
+def predict(img):
+    processed = preprocess_image(img)
+    preds = model.predict(processed)
+    predicted_class = np.argmax(preds, axis=-1)[0]
+    confidence = float(np.max(preds))
+    return CLASS_NAMES[predicted_class], confidence
 
-if uploaded_image is not None:
-    image = Image.open(uploaded_image).convert("RGB")
-    st.image(image, caption='Uploaded Image', use_column_width=True)
+# Streamlit UI
+st.title("🩺 Breast Cancer Classifier")
+st.write("Upload a breast ultrasound image to classify as **Benign**, **Malignant**, or **Normal**.")
 
-    if st.button('🧪 Predict'):
-        with st.spinner("Analyzing image..."):
-            predicted_label, prediction_probabilities = predict_image(image)
-        
-        if predicted_label:
-            st.success(f'✅ **Prediction:** {predicted_label.capitalize()}')
-            st.subheader('📊 Class Probabilities:')
-            for i, class_name in enumerate(class_names):
-                st.write(f"- **{class_name.capitalize()}**: {prediction_probabilities[i]:.4f}")
+uploaded_file = st.file_uploader("Upload Image", type=["png", "jpg", "jpeg"])
+
+if uploaded_file:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Uploaded Image", use_column_width=True)
+
+    with st.spinner("Classifying..."):
+        label, confidence = predict(image)
+        st.success(f"**Prediction:** {label}")
+        st.info(f"**Confidence:** {confidence * 100:.2f}%")
+
 
 
