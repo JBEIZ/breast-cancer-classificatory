@@ -1,49 +1,39 @@
 import streamlit as st
-import numpy as np
 import tensorflow as tf
 from PIL import Image
+import numpy as np
 
-# Load the model
+# Load model only once
 @st.cache_resource
 def load_model():
-    model = tf.keras.models.load_model("breast_cancer_classifier_model.keras")
-    return model
+    return tf.keras.models.load_model("breast_cancer_classifier_model.keras")
 
 model = load_model()
 
-# Define class names (update if needed)
-CLASS_NAMES = ['Benign', 'Malignant', 'Normal']
+# Define class names (adjust according to your model)
+class_names = ["Benign", "Malignant", "Normal"]
 
-# Preprocess image
-def preprocess_image(img):
-    img = img.convert('RGB')
-    img = img.resize((224, 224))
-    img_array = np.array(img) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
-    return img_array
+st.title("Breast Cancer Classifier")
+st.write("Upload an ultrasound image to classify it as benign, malignant, or normal.")
 
-# Predict function
-def predict(img):
-    processed = preprocess_image(img)
-    preds = model.predict(processed)
-    predicted_class = np.argmax(preds, axis=-1)[0]
-    confidence = float(np.max(preds))
-    return CLASS_NAMES[predicted_class], confidence
+uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
 
-# Streamlit UI
-st.title("🩺 Breast Cancer Classifier")
-st.write("Upload a breast ultrasound image to classify as **Benign**, **Malignant**, or **Normal**.")
-
-uploaded_file = st.file_uploader("Upload Image", type=["png", "jpg", "jpeg"])
-
-if uploaded_file:
-    image = Image.open(uploaded_file)
+if uploaded_file is not None:
+    image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
-    with st.spinner("Classifying..."):
-        label, confidence = predict(image)
-        st.success(f"**Prediction:** {label}")
-        st.info(f"**Confidence:** {confidence * 100:.2f}%")
+    # Preprocess image (adjust size as required by your model)
+    img_resized = image.resize((224, 224))  # Change (224, 224) to your model input
+    img_array = np.array(img_resized) / 255.0
+    img_batch = np.expand_dims(img_array, axis=0)
+
+    # Prediction
+    prediction = model.predict(img_batch)
+    predicted_class = class_names[np.argmax(prediction)]
+
+    st.write(f"### Prediction: {predicted_class}")
+    st.bar_chart(prediction[0])
+
 
 
 
